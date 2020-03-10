@@ -43,6 +43,7 @@ public class PoetCreaterProxy implements CreaterProxy<JavaFile> {
 
     private final boolean  isView;
     private final boolean  isActivity;
+    private final boolean  isFragment;
     private final boolean  isDialog;
     private final TypeName targetTypeName;
 
@@ -63,13 +64,15 @@ public class PoetCreaterProxy implements CreaterProxy<JavaFile> {
         this.mMethodName = "bindView";
 
         TypeMirror typeMirror = classElement.asType();
+        System.out.println("typeMirror == " + typeMirror.toString());
 
         isView = isSubtypeOfType(typeMirror, AptDemoProcessor.VIEW_TYPE);
         isActivity = isSubtypeOfType(typeMirror, AptDemoProcessor.ACTIVITY_TYPE);
+        isFragment = isSubtypeOfType(typeMirror, AptDemoProcessor.FRAGMENT_TYPE);
         isDialog = isSubtypeOfType(typeMirror, AptDemoProcessor.DIALOG_TYPE);
         boolean isFinal = classElement.getModifiers().contains(Modifier.FINAL);
 
-        System.out.println("isView == " + isView + ", isActivity == " + isActivity + ", isDialog == " + isDialog);
+        System.out.println(classElement.getSimpleName() + " -- isView == " + isView + ", isActivity == " + isActivity + ", isFragment == " + isFragment + ", isDialog == " + isDialog);
 
         TypeName targetType = TypeName.get(typeMirror);
         if (targetType instanceof ParameterizedTypeName) {
@@ -184,7 +187,7 @@ public class PoetCreaterProxy implements CreaterProxy<JavaFile> {
                 .addModifiers(Modifier.PUBLIC)
                 .addParameter(targetTypeName, "target");
         if (constructorNeedsView()) {
-        builder.addStatement("this(target, target.getWindow().getDecorView())");
+            builder.addStatement("this(target, target.getWindow().getDecorView())");
         } else {
             builder.addStatement("this(target, target)");
         }
@@ -232,7 +235,7 @@ public class PoetCreaterProxy implements CreaterProxy<JavaFile> {
         constructor.addStatement("this.target = target");
         constructor.addCode("\n");
 
-        for(int id : mElementsMap.keySet()){
+        for (int id : mElementsMap.keySet()) {
             Element element = mElementsMap.get(id);
             addFieldBinding(constructor, element, id, false);
         }
@@ -264,24 +267,37 @@ public class PoetCreaterProxy implements CreaterProxy<JavaFile> {
     }
 
     private void addFieldBinding(MethodSpec.Builder result, Element element, int id, boolean requiresCast) {
-        if(element == null){
+        if (element == null) {
             return;
         }
 
-        if(isView){
-
-        } else if(isActivity){
+        if (isView) {
+            if (requiresCast) {
+                result.addStatement("this.target.$L = ($T)(target.findViewById($L))", element.getSimpleName().toString(), element.asType(), id);
+            } else {
+                result.addStatement("this.target.$L = target.findViewById($L)", element.getSimpleName().toString(), id);
+            }
+        } else if (isActivity) {
             if (requiresCast) {
                 result.addStatement("target.$L = ($T)(target.findViewById($L))", element.getSimpleName().toString(), element.asType(), id);
             } else {
                 result.addStatement("target.$L = target.findViewById($L)", element.getSimpleName().toString(), id);
             }
-        } else if(isDialog){
+        } else if (isFragment) {
+            if (requiresCast) {
+                result.addStatement("target.$L = ($T)(source.findViewById($L))", element.getSimpleName().toString(), element.asType(), id);
+            } else {
+                result.addStatement("target.$L = source.findViewById($L)", element.getSimpleName().toString(), id);
+            }
+        } else if (isDialog) {
 
         }
     }
 
     public boolean constructorNeedsView() {
+        if (isFragment) {
+            return true;
+        }
         return false;
     }
 

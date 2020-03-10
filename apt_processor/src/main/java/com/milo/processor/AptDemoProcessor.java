@@ -29,9 +29,10 @@ import javax.tools.JavaFileObject;
 
 @AutoService(Processor.class)
 public class AptDemoProcessor extends AbstractProcessor {
-    protected static final String    VIEW_TYPE     = "android.view.View";
-    protected static final String    ACTIVITY_TYPE = "android.app.Activity";
-    protected static final String    DIALOG_TYPE   = "android.app.Dialog";
+    protected static final String VIEW_TYPE     = "android.view.View";
+    protected static final String ACTIVITY_TYPE = "android.app.Activity";
+    protected static final String DIALOG_TYPE   = "android.app.Dialog";
+    protected static final String FRAGMENT_TYPE = "androidx.fragment.app.Fragment";
 
     private final Map<String, CreaterProxy<?>> mProxyMap = new HashMap<>();
 

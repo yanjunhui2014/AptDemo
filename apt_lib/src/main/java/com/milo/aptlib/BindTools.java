@@ -4,6 +4,9 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.view.View;
 
+import androidx.fragment.app.Fragment;
+
+import java.io.FileReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -51,8 +54,20 @@ public final class BindTools {
         }
     }
 
-    public static void bind(View view) {
+    public static <T extends Fragment> void bind(T fragment, View view) {
+        if (fragment == null) {
+            return;
+        }
 
+        Class clazz = fragment.getClass();
+        Class bindClazz = null;
+        try {
+            bindClazz = Class.forName(clazz.getName() + "$Poet$ViewBind");
+            Constructor<?> constructor = bindClazz.getConstructor(fragment.getClass(), View.class);
+            constructor.newInstance(fragment, view);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void bind(Dialog dialog) {

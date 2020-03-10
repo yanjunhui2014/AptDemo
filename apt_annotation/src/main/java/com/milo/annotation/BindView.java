@@ -15,7 +15,7 @@ import androidx.annotation.IdRes;
  * Created by Milo  2020/3/7
  * E-Mail : 303767416@qq.com
  */
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface BindView {
 
