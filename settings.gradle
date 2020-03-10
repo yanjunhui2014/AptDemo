@@ -1,1 +1,1 @@
-include ':app', ':libapt'
+include ':app', ':libapt', ':apt_annotation', ':apt_processor', ':apt_lib'

@@ -1,5 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-apply from: rootProject.file('config.gradle')
+apply from: new File('config.gradle')
 
 buildscript {
     repositories {
@@ -8,11 +8,16 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.2'
+        classpath 'com.android.tools.build:gradle:3.2.0'
+
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
+
+    ext.deps = [
+            javapoet: 'com.squareup:javapoet:1.10.0',
+    ]
 }
 
 allprojects {
